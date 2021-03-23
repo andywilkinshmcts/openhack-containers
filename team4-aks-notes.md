@@ -26,3 +26,11 @@ az aks update -n Team4AKS -g TeamResources --attach-acr registryzyo9157
  kubectl delete deployment userjava
  
  
+####### Challenge3 - RBAC setup
+
+# create a res group
+az ad group create --display-name team4AKSAdminGroup --mail-nickname team4AKSAdminGroup
+# find if resource group is created okay?
+az ad group list --filter "displayname eq 'team4AKSAdminGroup'" -o table
+# create a cluster
+az aks create -g teamResources -n Team4AKSRBAC --enable-aad --aad-admin-group-object-ids be864619-cf32-463d-9048-a7e64f9270f4 --aad-tenant-id b40dc1a2-7266-4225-8c82-99ef76fb714b --aci-subnet-name team4-subnet
