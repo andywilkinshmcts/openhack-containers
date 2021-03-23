@@ -36,6 +36,10 @@ az ad group create --display-name team4AKSAdminGroup --mail-nickname team4AKSAdm
 # find if resource group is created okay?
 az ad group list --filter "displayname eq 'team4AKSAdminGroup'" -o table
 
+
+##### get inside a pos #######
+kubectl exec -it podname /bin/bash
+
 # get the id of the sub net
 az network vnet subnet  list --resource-group teamResources --vnet-name vnet
 # value of the id property for the subnet
@@ -51,4 +55,3 @@ az aks update -n Team4AKSRBAC -g TeamResources --attach-acr registryzyo9157
 
 # Test using port forwarding to allow app to be accessed via localhost
  kubectl port-forward tripviewer-5496c8d888-7dfpr 8888:80
-
