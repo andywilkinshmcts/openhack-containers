@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      containers:
+      - name: trips
+        image: registryzyo9157.azurecr.io/trips:latest
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            value: sqladminzYo9157
+          - name: SQL_PASSWORD
+            value: cW1zk2Ev4
+          - name: SQL_DBNAME
+            value: mydrivingDB
+          - name: SQL_SERVER
+            value: sqlserverzyo9157.database.windows.net
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Local         
+        resources:
+          requests:
+            cpu: 250m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
