@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      containers:
+      - name: tripviewer
+        image: registryzyo9157.azurecr.io/tripviewer:latest
+        ports:
+        - containerPort: 80
+        env:
+          - name: USERPROFILE_API_ENDPOINT
+            value: http://user
+          - name: TRIPS_API_ENDPOINT
+            value: http://trips      
+        resources:
+          requests:
+            cpu: 250m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
