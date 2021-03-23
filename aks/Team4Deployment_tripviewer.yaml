@@ -19,9 +19,9 @@ spec:
         - containerPort: 80
         env:
           - name: USERPROFILE_API_ENDPOINT
-            value: http://user
+            value: http://userprofilebackend
           - name: TRIPS_API_ENDPOINT
-            value: http://trips      
+            value: http://tripsbackend      
         resources:
           requests:
             cpu: 250m
