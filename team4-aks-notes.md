@@ -59,3 +59,43 @@ az aks update -n Team4AKSRBAC -g TeamResources --attach-acr registryzyo9157
 
 # Test using port forwarding to allow app to be accessed via localhost
 kubectl port-forward tripviewer-5496c8d888-7dfpr 8888:80
+
+
+# 
+AKS_ID=$(az aks show \
+    --resource-group teamResources \  
+    --name Team4AKSRBAC \
+    --query id -o tsv)
+
+# bring the api-users group-id from the portal for use in the below command
+989b8ec5-ffc7-4bc1-af5d-daea785e843a
+
+#
+az role assignment create \
+  --assignee 989b8ec5-ffc7-4bc1-af5d-daea785e843a \
+  --role "Azure Kubernetes Service Cluster User Role" \
+  --scope $AKS_ID
+
+# 
+kubectl apply -f Team4RoleApi.yaml
+kubectl apply -f Team4RoleBinding_api.yaml
+kubectl apply -f Team4RoleWeb.yaml
+kubectl apply -f Team4RoleBinding_web.yaml
+
+#
+az aks get-credentials --resource-group teamResources --name Team4AKSRBAC --overwrite-existing
+# try accessing the pods in web namespace
+kubectl get pods -n web
+
+# try accessing the pods in api namespace
+kubectl get pods -n api
+-- note at this stage we must use the api dev user credentials otherwise we will hit a Forbidden exception
+
+
+
+# az key vault creation uysing the command line
+az keyvault create -n Team4KeyVaultMoJ -g teamResources --location "UK South"
+
+# add a test secrett othge key store
+az keyvault secret set --vault-name Team4KeyVaultMoJ --name secret1 --value "HelloWorld"
+
