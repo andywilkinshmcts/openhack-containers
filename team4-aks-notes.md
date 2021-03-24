@@ -9,6 +9,7 @@ sudo az aks install-cli
 # gret credentials
 az aks get-credentials --resource-group TeamResources --name Team4AKS
 
+az aks get-credentials --resource-group TeamResources --name Team4AKSRBAC
 
 # connect to cluister
 kubctl get nodes
@@ -53,5 +54,5 @@ az aks update -n Team4AKSRBAC -g TeamResources --attach-acr registryzyo9157
 
 # deploy all deployments and services via deployAll.sh script
 
-# Test using port forwarding to allow app to be accessed via localhost
+# Test using port forwarding to pod to allow app to be accessed via localhost
  kubectl port-forward tripviewer-5496c8d888-7dfpr 8888:80
