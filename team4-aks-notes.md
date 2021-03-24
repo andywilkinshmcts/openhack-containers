@@ -99,3 +99,55 @@ az keyvault create -n Team4KeyVaultMoJ -g teamResources --location "UK South"
 # add a test secrett othge key store
 az keyvault secret set --vault-name Team4KeyVaultMoJ --name secret1 --value "HelloWorld"
 
+
+az keyvault secret set --vault-name Team4KeyVaultMoJ --name SQL-USER --value "sqladminzYo9157"
+
+az keyvault secret set --vault-name Team4KeyVaultMoJ --name SQL-PASSWORD --value "cW1zk2Ev4"
+
+kubectl create secret generic secrets-store-creds --from-literal clientid=team4Moj --from-literal clientsecret=happyWednesday -n api
+
+kubectl create secret generic secrets-store-creds --from-literal clientid=team4Moj --from-literal clientsecret=happyWednesday -n web
+
+az ad sp create-for-rbac --skip-assignment --name team4MojSP
+
+az keyvault set-policy -n Team4KeyVaultMoJ --secret-permissions get --spn team4MojSP
+
+export KEYVAULT_NAME=Team4KeyVaultMoJ
+
+export SERVICE_PRINCIPAL_CLIENT_SECRET="$(az ad sp create-for-rbac --skip-assignment --name http://secrets-store-test --query 'password' -otsv)"
+
+export SERVICE_PRINCIPAL_CLIENT_ID="$(az ad sp show --id http://secrets-store-test --query 'appId' -otsv)"
+
+az keyvault set-policy -n ${KEYVAULT_NAME} --secret-permissions get --spn ${SERVICE_PRINCIPAL_CLIENT_ID}
+
+kubectl create secret generic secrets-store-creds --from-literal clientid=${SERVICE_PRINCIPAL_CLIENT_ID} --from-literal clientsecret=${SERVICE_PRINCIPAL_CLIENT_SECRET} -n api
+
+
+# Set environment variables
+SPNAME=team4MojSP
+AZURE_CLIENT_ID=$(az ad sp show --id http://${SPNAME} --query appId -o tsv)
+KEYVAULT_NAME=Team4KeyVaultMoJ
+KEYVAULT_RESOURCE_GROUP=teamResources
+SUBID=06eb0a46-fa13-463b-93e4-96eca1947037
+
+az keyvault set-policy -n $KEYVAULT_NAME --key-permissions get --spn $AZURE_CLIENT_ID
+az keyvault set-policy -n $KEYVAULT_NAME --secret-permissions get --spn $AZURE_CLIENT_ID
+az keyvault set-policy -n $KEYVAULT_NAME --certificate-permissions get --spn $AZURE_CLIENT_ID
+
+
+# Create a namespace for your ingress resources
+kubectl create namespace ingress-basic
+
+# Add the ingress-nginx repository
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+# Use Helm to deploy an NGINX ingress controller
+helm install nginx-ingress ingress-nginx/ingress-nginx \
+    --namespace ingress-basic \
+    --set controller.replicaCount=3 \
+    --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+    --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+    --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux
+
+
+    kubectl --namespace ingress-basic get services -o wide -w nginx-ingress-ingress-nginx-controller
